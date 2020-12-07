@@ -29,6 +29,7 @@ class DrawingView(context:Context, attrs: AttributeSet) : View(context, attrs) {
     private fun setupDrawing(){
         mDrawPath = CustomPath(color,mBrushSize)
         mDrawPaint = Paint()
+        mDrawPaint!!.isAntiAlias = true
         mDrawPaint!!.color = color
         mDrawPaint!!.style = Paint.Style.STROKE
         mDrawPaint!!.strokeJoin = Paint.Join.ROUND
