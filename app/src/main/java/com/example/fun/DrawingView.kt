@@ -3,6 +3,7 @@ package com.example.`fun`
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 /* to draw onto a canvas in Android, you will need four things:
@@ -91,7 +92,19 @@ class DrawingView(context:Context, attrs: AttributeSet) : View(context, attrs) {
 
         return true
     }
-    internal inner class CustomPath(var color: Int , var brushThickness: Float) : Path() {
 
+    fun setSizeForBrush(newSize: Float) {
+        mBrushSize = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, newSize,
+                resources.displayMetrics
+        )
+        mDrawPaint!!.strokeWidth = mBrushSize
+    }
+    internal inner class CustomPath(var color: Int , var brushThickness: Float) : Path() {
+    }
+
+    fun setColorForPaint(newColor : String){
+        color = Color.parseColor(newColor)
+        mDrawPaint!!.color = color
     }
 }
