@@ -6,18 +6,35 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.example.fun.DrawingView
-        android:id="@+id/drawing_view"
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="5dp"
         android:background="@drawable/background_drawing_view_layout"
+
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageView
+            android:id="@+id/iv_background"
+            android:scaleType="fitXY"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            android:contentDescription="Background image for drawing view"/>
+
+        <com.example.fun.DrawingView
+            android:id="@+id/drawing_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#30ffffff"/>
+
+    </FrameLayout>
+
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -118,14 +135,54 @@
 
         </LinearLayout>
 
-        <ImageView
+        <LinearLayout
             android:layout_gravity="center"
-            android:id="@+id/ib_brush"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="5dp"
-            android:contentDescription="brush icon on main screen"
-            android:src="@drawable/ic_brush" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_background_image_selector"
+                android:layout_gravity="center"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:contentDescription="brush icon on main screen"
+                android:src="@drawable/ic_gallery" />
+
+            <ImageView
+                android:id="@+id/iv_undo"
+                android:layout_gravity="center"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:contentDescription="undo on main screen"
+                android:src="@android:drawable/ic_menu_revert" />
+
+            <ImageView
+                android:id="@+id/iv_redo"
+                android:layout_gravity="center"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:contentDescription="redo button on main screen"
+                android:src="@android:drawable/ic_menu_revert"
+                android:rotation="180"/>
+
+            <ImageView
+                android:layout_gravity="center"
+                android:id="@+id/iv_brush"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:contentDescription="brush icon on main screen"
+                android:src="@drawable/ic_brush" />
+
+
+
+        </LinearLayout>
+
+
     </LinearLayout>
 
 
