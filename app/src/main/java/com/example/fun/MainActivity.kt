@@ -6,9 +6,10 @@ import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.ImageDecoder
-import android.net.Uri
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -17,14 +18,12 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.dialog_brush_size.*
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
+import java.io.*
+import java.util.*
 
 
 class MainActivity : AppCompatActivity(){
@@ -60,6 +59,15 @@ class MainActivity : AppCompatActivity(){
         iv_redo.setOnClickListener {
             drawing_view.onClickRedo()
         }
+
+        iv_save.setOnClickListener {
+            if(isReadStorageAllowed()){
+                BitmapAsyncTask(getBitmapFromView(drawing_view)).execute()
+            }else{
+                requestStoragePermission()
+            }
+
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -69,16 +77,15 @@ class MainActivity : AppCompatActivity(){
             if(requestCode == GALLERY)
             {
                 try {
-
                     if(data!!.data != null){
-                        Toast.makeText(this, "onActivity result" , Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "onActivity result", Toast.LENGTH_SHORT).show()
                         val imageUri = data.data
                         val bMap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                             ImageDecoder.decodeBitmap(ImageDecoder.createSource(contentResolver, imageUri!!))
                         } else {
                             MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
                         }
-                        val bMapScaled = Bitmap.createScaledBitmap(bMap,  iv_background.width, iv_background.height, true)
+                        val bMapScaled = Bitmap.createScaledBitmap(bMap, iv_background.width, iv_background.height, true)
                         BitmapScaler.scaleToFitHeight(bMapScaled, iv_background.height)
                         BitmapScaler.scaleToFitWidth(bMapScaled, iv_background.width)
                         iv_background.setImageBitmap(bMapScaled)
@@ -135,6 +142,39 @@ class MainActivity : AppCompatActivity(){
         }
     }
 
+    private inner class BitmapAsyncTask(val mBitmap: Bitmap) : AsyncTask<Any, Void, String>(){
+
+        override fun doInBackground(vararg params: Any?): String {
+
+            var result = ""
+
+            if(mBitmap != null){
+                try {
+                    val bytes = ByteArrayOutputStream()
+                    mBitmap.compress(Bitmap.CompressFormat.PNG, 90, bytes)
+                    val f = File(externalCacheDir!!.absoluteFile.toString() + File.separator + "KidDrawingApp_" + System.currentTimeMillis() / 1000 + ".png")
+
+                    val fos = FileOutputStream(f)
+                    fos.write(bytes.toByteArray())
+                    fos.close()
+                    result = f.absolutePath
+                }catch (e: Exception){
+                    e.printStackTrace()
+                }
+            }
+            return result
+        }
+
+        override fun onPostExecute(result: String?) {
+            super.onPostExecute(result)
+            if(result!!.isNotEmpty()){
+                Toast.makeText(this@MainActivity, "File saved Successfully : $result", Toast.LENGTH_LONG).show()
+            }else{
+                Toast.makeText(this@MainActivity, "Something got wrong while saving the file ", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    }
     //TODO(Step 4 - For the first time you need to ask for the permission
     // for selecting the image from your phone or when it is not allowed it is when you are about to select an image from phone storage.)
     //START
@@ -205,10 +245,20 @@ class MainActivity : AppCompatActivity(){
         //If permission is granted returning true and If permission is not granted returning false
         return result == PackageManager.PERMISSION_GRANTED
     }
-    //END
 
-    //TODO(Step 5 - A unique code for asking the storage permission is declared in Companion Object.)
-    //START
+    private fun getBitmapFromView(view: View) : Bitmap{
+        val returnedBitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(returnedBitmap)
+        val bgDrawable = view.background
+        if(bgDrawable != null){
+            bgDrawable.draw(canvas)
+        }else{
+            canvas.drawColor(Color.WHITE)
+        }
+
+        view.draw(canvas)
+        return returnedBitmap
+    }
     companion object{
 
 
@@ -219,7 +269,6 @@ class MainActivity : AppCompatActivity(){
          */
         private const val STORAGE_PERMISSION_CODE = 1
         private const val GALLERY = 2
-        private const val INSAMPLESIZE = 4
         //END
     }
 }

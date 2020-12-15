@@ -49,7 +49,8 @@
             android:id="@+id/ll_paint_pallet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_gravity="center">
 
             <ImageButton
                 android:layout_width="25dp"
@@ -167,6 +168,16 @@
                 android:layout_margin="5dp"
                 android:contentDescription="redo button on main screen"
                 android:src="@android:drawable/ic_menu_revert"
+                android:rotation="180"/>
+
+            <ImageView
+                android:id="@+id/iv_save"
+                android:layout_gravity="center"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:contentDescription="redo button on main screen"
+                android:src="@android:drawable/ic_menu_save"
                 android:rotation="180"/>
 
             <ImageView
